@@ -2,14 +2,19 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Escalera de la Violencia de Género</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Mobile Drag and Drop Polyfill Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
     <style>
       body {
         font-family: 'Inter', sans-serif;
         background-color: #f8fafc;
+        /* Prevent pull-to-refresh on mobile */
+        overscroll-behavior-y: contain;
+        touch-action: manipulation;
       }
       /* Custom scrollbar for better aesthetics */
       ::-webkit-scrollbar {
@@ -53,7 +58,9 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "vite": "https://aistudiocdn.com/vite@^7.2.2",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "mobile-drag-drop": "https://aistudiocdn.com/mobile-drag-drop@^3.0.0-rc.0",
+    "mobile-drag-drop/": "https://aistudiocdn.com/mobile-drag-drop@^3.0.0-rc.0/"
   }
 }
 </script>
