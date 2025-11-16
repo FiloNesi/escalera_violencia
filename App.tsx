@@ -22,6 +22,10 @@ const App: React.FC = () => {
   const [placements, setPlacements] = useState<Record<string, string>>({}); // zoneId -> cardId
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   
+  // UI State for drag interactions
+  const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
+  const [isHoveringDropZone, setIsHoveringDropZone] = useState(false);
+
   // Initialize game
   useEffect(() => {
     resetGame();
@@ -31,19 +35,32 @@ const App: React.FC = () => {
     setAvailableCards(shuffle(CARDS));
     setPlacements({});
     setShowSuccessModal(false);
+    setDraggedCardId(null);
+    setIsHoveringDropZone(false);
   };
 
   const handleDragStart = (e: React.DragEvent, cardId: string) => {
     e.dataTransfer.setData('cardId', cardId);
     e.dataTransfer.effectAllowed = 'move';
+    setDraggedCardId(cardId);
   };
 
-  const handleDrop = (e: React.DragEvent, targetZoneId: string) => {
+  const handleDragEnd = () => {
+    setDraggedCardId(null);
+    setIsHoveringDropZone(false);
+  };
+
+  // Returns true if drop was successful, false otherwise
+  const handleDrop = (e: React.DragEvent, targetZoneId: string): boolean => {
     e.preventDefault();
     const cardId = e.dataTransfer.getData('cardId');
     const card = CARDS.find((c) => c.id === cardId);
 
-    if (!card) return;
+    // Reset drag state
+    setDraggedCardId(null);
+    setIsHoveringDropZone(false);
+
+    if (!card) return false;
 
     // Logic: Only allow drop if it matches the correct zone
     if (card.correctZoneId === targetZoneId) {
@@ -56,21 +73,10 @@ const App: React.FC = () => {
 
       // 2. Remove from available cards
       setAvailableCards((prev) => prev.filter((c) => c.id !== cardId));
+      return true;
     } else {
-      // Optional: Visual feedback for wrong move could go here (e.g. toast)
-      // For now, we just don't allow the drop (it snaps back)
-      const element = document.getElementById('game-container');
-      if(element) {
-          element.animate([
-              { transform: 'translateX(0)' },
-              { transform: 'translateX(-10px)' },
-              { transform: 'translateX(10px)' },
-              { transform: 'translateX(0)' }
-          ], {
-              duration: 300,
-              easing: 'ease-in-out'
-          });
-      }
+      // Return false to allow the DropZone to handle the error animation
+      return false;
     }
   };
 
@@ -146,6 +152,9 @@ const App: React.FC = () => {
                     card={card} 
                     isPlaced={false}
                     onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    isDragging={draggedCardId === card.id}
+                    isHoveringZone={isHoveringDropZone}
                   />
                 ))
               )}
@@ -167,6 +176,7 @@ const App: React.FC = () => {
                   zone={zone}
                   placedCard={getPlacedCardForZone(zone.id)}
                   onDrop={handleDrop}
+                  onHoverChange={setIsHoveringDropZone}
                 />
               ))}
             </div>
@@ -183,6 +193,7 @@ const App: React.FC = () => {
                     zone={zone}
                     placedCard={getPlacedCardForZone(zone.id)}
                     onDrop={handleDrop}
+                    onHoverChange={setIsHoveringDropZone}
                   />
               </div>
             ))}
